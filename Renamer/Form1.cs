@@ -30,6 +30,11 @@ namespace Renamer
 
         private void button2_Click(object sender, EventArgs e)
         {
+            progressBar1.Value = 0;
+            progressBar1.Maximum = System.IO.Directory.GetDirectories(textBox1.Text, "*", System.IO.SearchOption.AllDirectories).Count();
+            progressBar1.Minimum = 0;
+            progressBar1.Step = 1;
+
             VFolder root = renameContent(textBox1.Text);
             SaveFileDialog dg = new SaveFileDialog();
             dg.FileName = "Names.xml";
@@ -40,6 +45,8 @@ namespace Renamer
                 System.IO.TextWriter writer = new System.IO.StreamWriter(dg.FileName);
                 System.Xml.Serialization.XmlSerializer x = new System.Xml.Serialization.XmlSerializer(root.GetType());
                 x.Serialize(writer, root);
+                writer.Close();
+                MessageBox.Show("All directories renamed", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
         }
 
@@ -59,6 +66,7 @@ namespace Renamer
                 temp.NewName = newName;
                 actFolder.SubFolders.Add(temp);
                 System.IO.Directory.Move(folder.FullName, folder.Parent.FullName + "\\" + newName);
+                progressBar1.PerformStep();
             }
 
             return actFolder;
@@ -79,12 +87,18 @@ namespace Renamer
             dg.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
             if (dg.ShowDialog() == DialogResult.OK)
             {
+                progressBar1.Value = 0;
+                progressBar1.Maximum = System.IO.Directory.GetDirectories(textBox1.Text, "*", System.IO.SearchOption.AllDirectories).Count();
+                progressBar1.Minimum = 0;
+                progressBar1.Step = 1;
+
                 System.IO.TextReader reader = new System.IO.StreamReader(dg.FileName);
                 VFolder root = new VFolder();
                 System.Xml.Serialization.XmlSerializer x = new System.Xml.Serialization.XmlSerializer(root.GetType());
                 root = (VFolder) x.Deserialize(reader);
                 restoreName(textBox1.Text, root);
 
+                reader.Close();
                 MessageBox.Show("Names restored", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
         }
@@ -97,6 +111,7 @@ namespace Renamer
             {
                 System.IO.Directory.Move(path + "\\" + act.NewName, path + "\\" + act.Name);
                 restoreName(path + "\\" + act.Name, act);
+                progressBar1.PerformStep();
             }
         }
     }

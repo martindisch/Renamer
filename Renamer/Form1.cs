@@ -53,9 +53,17 @@ namespace Renamer
             foreach (System.IO.DirectoryInfo folder in directories)
             {
                 actFolder.SubFolders.Add(renameContent(folder.FullName));
+                System.IO.Directory.Move(folder.FullName, folder.Parent.FullName + "\\" + generateName());
             }
 
             return actFolder;
+        }
+
+        private String chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+        private Random random = new Random();
+        private String generateName()
+        {
+            return new String(Enumerable.Repeat(chars, 8).Select(s => s[random.Next(s.Length)]).ToArray());
         }
     }
 }

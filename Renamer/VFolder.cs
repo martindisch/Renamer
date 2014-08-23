@@ -8,7 +8,7 @@ namespace Renamer
 {
     public class VFolder
     {
-        public String Name;
+        public String Name, NewName;
         public List<VFolder> SubFolders = new List<VFolder>();
     }
 }
